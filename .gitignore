@@ -1,0 +1,6 @@
+Debug/
+baremetal_bluerover Debug.launch
+STM32F401RETX_FLASH.ld
+STM32F401RETX_RAM.ld
+baremetal_bluerover.ioc
+Binaries/
