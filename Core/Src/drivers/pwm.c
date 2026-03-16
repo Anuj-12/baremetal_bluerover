@@ -27,8 +27,6 @@ PWM_Channel pwm_ch[4] = {
 				TIM_CCMR2_OC4M_1, TIM_CCMR2_CC4S, TIM_CCER_CC4P, TIM_CCMR2_OC4PE, TIM_CCER_CC4E}
 };
 
-void led_init(void);
-
 void pwm_init(int channel, uint16_t freq){
 	channel = channel - 1; // since the array is 0 indexed but channels are 1 indexed
 
@@ -68,15 +66,4 @@ void pwm_set_duty(int channel, uint8_t duty){
 	if(duty > 100) duty = 100;
 
 	*(pwm_ch[channel - 1].CCR) = (duty * (TIM2->ARR + 1)) / 100;
-}
-
-void led_init(void){
-	/* CONFIGURING LED FOR TEST */
-	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
-	// SET PA5 TO ALTERNATE FXN
-	GPIOA->MODER |= (1U << 11);
-	GPIOA->MODER &= ~(1U << 10);
-	// SET THE FUNcTION TYPE TO TIM2_CH1
-	GPIOA->AFR[0] &= ~(0xF << 20);
-	GPIOA->AFR[0] |=  (0x1 << 20);   // AF1
 }
