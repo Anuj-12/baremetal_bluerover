@@ -31,14 +31,13 @@ void led_init(void);
 
 void pwm_init(int channel, uint16_t freq){
 	channel = channel - 1; // since the array is 0 indexed but channels are 1 indexed
-	led_init();
 
 	/* CONFIGURING THE TIMER */
 	RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
 	// SET PRESCALER
-	TIM2->PSC = 1 - 1; 			// PRESCALER = 4
+	TIM2->PSC = 4 - 1; 			// PRESCALER = 4
 	// SET PWM TIME FREQUENCY
-	TIM2->ARR = (16000000 / freq) - 1;
+	TIM2->ARR = (4000000 / freq) - 1;
 
 
 	// SET TO OUTPUT COMPARE MODE
