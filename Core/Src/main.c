@@ -3,7 +3,7 @@
 
 int main(){
 
-	pwm_init(4000);
-	pwm_set_duty(100);
+	pwm_init(1, 4000);
+	pwm_set_duty(1, 50);
 	return 0;
 }
