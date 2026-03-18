@@ -2,21 +2,14 @@
 #include "pwm.h"
 #include "gpio.h"
 #include "motor.h"
+#include "uart.h"
 
 int main(){
-	motor_init(1, 4000);
-	motor_set_speed(1, 5);
-
+	usart_init(115200);
 	while(1){
-		motor_forward(1);
-		for(int i = 0; i < 1000000; i++);
-		motor_stop(1);
-		for(int i = 0; i < 1000000; i++);
-		motor_backward(1);
-		for(int i = 0; i < 1000000; i++);
-		motor_stop(1);
-		for(int i = 0; i < 1000000; i++);
+	    char c = usart_read();
+	    if(c != '\0'){
+	        usart_write_ch(c);
+	    }
 	}
-
-	return 0;
 }

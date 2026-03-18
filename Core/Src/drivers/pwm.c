@@ -63,6 +63,7 @@ void pwm_init(int channel, uint16_t freq){
 }
 
 void pwm_set_duty(int channel, uint8_t duty){
+
 	if(duty > 100) duty = 100;
 
 	*(pwm_ch[channel - 1].CCR) = (duty * (TIM2->ARR + 1)) / 100;
