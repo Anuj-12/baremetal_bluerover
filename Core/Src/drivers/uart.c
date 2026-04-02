@@ -1,18 +1,23 @@
-// Don't like how the buffer is handled...
-// Buffer overflow is also a problem
 #include "stm32f401xe.h"
 #include "uart.h"
 #include "gpio.h"
 
 #define PERIPH_CLK			16000000
+#define BUFFER_SIZE			20
 
-// buffer for storing data
-volatile char data[5] = {};
-int count = 0;
-int read_count = 0;
+// Implementing a ring buffer to store data
+// Overwrites data instead of overflow
+typedef struct{
+	volatile char data[BUFFER_SIZE];
+	int head;
+	int tail;
+}BUFFER;
 
-// Using USART2
-void usart_init(unsigned int baud){
+BUFFER uart2_buff;
+BUFFER uart1_buff;
+
+// Using USART2 for debugging comms
+void uart2_init(unsigned int baud){
 	/* CONFIGURE GPIO PINS FOR RX TX */
 	gpio_config_alternate('A', 2, 7);	// set PA2 for TX
 	gpio_config_alternate('A', 3, 7);	// set PA3 for RX
@@ -21,7 +26,7 @@ void usart_init(unsigned int baud){
 	RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
 	USART2->BRR = (PERIPH_CLK + (baud / 2U)) / baud;	// 16x oversampling
 
-	RCC->CFGR &= ~(7 << 10);
+//	RCC->CFGR &= ~(7 << 10);	// Sets the APB1 prescaler to 1
 
 	// USART RX CONFIG
 	USART2->CR1 &= ~USART_CR1_M_Msk;	// Word length = 8
@@ -36,40 +41,117 @@ void usart_init(unsigned int baud){
 	USART2->CR1 |= USART_CR1_TE;
 	USART2->CR1 |= USART_CR1_RE;
 	USART2->CR1 |= USART_CR1_UE;
+
+	/* RESET THE UART2 BUFFER */
+	uart2_buff.head = 0;
+	uart2_buff.tail = 0;
 }
 
-void usart_write(char* msg){
+// Using USART1 for peripheral comms
+void uart1_init(unsigned int baud){
+	/* CONFIGURE GPIO PINS FOR RX TX */
+	gpio_config_alternate('A', 9, 7);	// set PA9 for TX
+	gpio_config_alternate('A', 10, 7);	// set PA10 for RX
+
+	/* USART CONFIGURATION */
+	RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
+	USART1->BRR = (PERIPH_CLK + (baud / 2U)) / baud;	// 16x oversampling
+
+	// USART RX CONFIG
+	USART1->CR1 &= ~USART_CR1_M_Msk;	// Word length = 8
+	USART1->CR2 &= ~(USART_CR2_STOP_0 | USART_CR2_STOP_1);	// 1 stop bit
+
+	/* ENABLE INTERRUPT FOR RX */
+	// RXNE is SET when there is unread data in RDR
+	// RESET by reading it
+	USART1->CR1 |= USART_CR1_RXNEIE;
+	NVIC_EnableIRQ(USART1_IRQn);
+
+	USART1->CR1 |= USART_CR1_TE;
+	USART1->CR1 |= USART_CR1_RE;
+	USART1->CR1 |= USART_CR1_UE;
+
+	/* RESET THE UART1 BUFFER */
+	uart1_buff.head = 0;
+	uart1_buff.tail = 0;
+}
+
+
+void uart2_write(char* msg){
 	// SHIT... SO MUCH BETTER;
 	while(*msg){
 	    while(!(USART2->SR & USART_SR_TXE));
+	    //++ has higher precedence than *
 	    USART2->DR = *msg++;
 	}
+	while(!(USART2->SR & USART_SR_TC));
 }
 
-void usart_write_ch(char msg){
+void uart1_write(char* msg){
+	while(*msg){
+	    while(!(USART1->SR & USART_SR_TXE));
+	    //++ has higher precedence than *
+	    USART1->DR = *msg++;
+	}
+	while(!(USART1->SR & USART_SR_TC));
+}
+
+
+void uart2_write_ch(char msg){
     while(!(USART2->SR & USART_SR_TXE));
     USART2->DR = msg;
 }
 
-void usart_read_reg(void){
-	// RESET RXNE by reading it
-	char curr = USART2->DR;
-	data[count] = curr;
-
-	count = (count + 1) % 5;
+void uart1_write_ch(char msg){
+    while(!(USART1->SR & USART_SR_TXE));
+    USART1->DR = msg;
 }
 
-char usart_read(void){
-	if(read_count > 4) read_count = 0;
 
-	if(read_count != count){
-		return data[read_count++];
+void uart2_read_reg(void){
+	// RESET RXNE by reading it
+	char curr = USART2->DR;
+	uart2_buff.data[uart2_buff.head] = curr;
+
+	uart2_buff.head = (uart2_buff.head + 1) % BUFFER_SIZE;
+}
+
+void uart1_read_reg(void){
+	// RESET RXNE by reading it
+	char curr = USART1->DR;
+	uart1_buff.data[uart1_buff.head] = curr;
+
+	uart1_buff.head = (uart1_buff.head + 1) % BUFFER_SIZE;
+}
+
+
+char uart2_read(void){
+	if(uart2_buff.tail == BUFFER_SIZE) uart2_buff.tail = 0;
+
+	if(uart2_buff.tail != uart2_buff.head){
+		return uart2_buff.data[uart2_buff.tail++];
 	}
 	return '\0';
 }
 
+char uart1_read(void){
+	if(uart1_buff.tail == BUFFER_SIZE) uart1_buff.tail = 0;
+
+	if(uart1_buff.tail != uart1_buff.head){
+		return uart1_buff.data[uart1_buff.tail++];
+	}
+	return '\0';
+}
+
+
 void USART2_IRQHandler(void){
 	if(USART2->SR & USART_SR_RXNE){
-		usart_read_reg();
+		uart2_read_reg();
+	}
+}
+
+void USART1_IRQHandler(void){
+	if(USART1->SR & USART_SR_RXNE){
+		uart1_read_reg();
 	}
 }
