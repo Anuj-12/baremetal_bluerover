@@ -4,7 +4,7 @@
 typedef struct{
 	// I like this more than the pwm style
 	GPIO_TypeDef *GPIOx;
-	uint8_t GPIOxEN;
+	uint32_t GPIOxEN;
 }GPIO_PIN;
 
 GPIO_PIN gpiox[5] = {

@@ -9,7 +9,7 @@
 // Overwrites data instead of overflow
 typedef struct{
 	volatile char data[BUFFER_SIZE];
-	int head;
+	volatile int head;
 	int tail;
 }BUFFER;
 
@@ -50,8 +50,8 @@ void uart2_init(unsigned int baud){
 // Using USART1 for peripheral comms
 void uart1_init(unsigned int baud){
 	/* CONFIGURE GPIO PINS FOR RX TX */
-	gpio_config_alternate('A', 9, 7);	// set PA9 for TX
-	gpio_config_alternate('A', 10, 7);	// set PA10 for RX
+	gpio_config_alternate('B', 6, 7);	// set PB6 for TX
+	gpio_config_alternate('B', 7, 7);	// set PB7 for RX
 
 	/* USART CONFIGURATION */
 	RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
@@ -80,10 +80,13 @@ void uart1_init(unsigned int baud){
 void uart2_write(char* msg){
 	// SHIT... SO MUCH BETTER;
 	while(*msg){
+		// Wait till the data from TDR has transferred to shift reg
 	    while(!(USART2->SR & USART_SR_TXE));
 	    //++ has higher precedence than *
 	    USART2->DR = *msg++;
 	}
+
+	// Wait till the frame has been transferred completely
 	while(!(USART2->SR & USART_SR_TC));
 }
 
@@ -109,7 +112,7 @@ void uart1_write_ch(char msg){
 
 
 void uart2_read_reg(void){
-	// RESET RXNE by reading it
+	// Fill the ring buffer on IRQ
 	char curr = USART2->DR;
 	uart2_buff.data[uart2_buff.head] = curr;
 
@@ -126,7 +129,8 @@ void uart1_read_reg(void){
 
 
 char uart2_read(void){
-	if(uart2_buff.tail == BUFFER_SIZE) uart2_buff.tail = 0;
+	// Actually read the buffer on command
+	if(uart2_buff.tail >= BUFFER_SIZE) uart2_buff.tail = 0;
 
 	if(uart2_buff.tail != uart2_buff.head){
 		return uart2_buff.data[uart2_buff.tail++];
@@ -135,7 +139,7 @@ char uart2_read(void){
 }
 
 char uart1_read(void){
-	if(uart1_buff.tail == BUFFER_SIZE) uart1_buff.tail = 0;
+	if(uart1_buff.tail >= BUFFER_SIZE) uart1_buff.tail = 0;
 
 	if(uart1_buff.tail != uart1_buff.head){
 		return uart1_buff.data[uart1_buff.tail++];
@@ -151,7 +155,11 @@ void USART2_IRQHandler(void){
 }
 
 void USART1_IRQHandler(void){
-	if(USART1->SR & USART_SR_RXNE){
-		uart1_read_reg();
-	}
+    if(USART1->SR & USART_SR_RXNE){
+        uart1_read_reg();
+    }
+}
+
+void HardFault_Handler(void){
+    while(1);
 }

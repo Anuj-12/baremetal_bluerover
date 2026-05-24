@@ -1,7 +1,7 @@
 #include "uart.h"
 #include "uart_reader.h"
 
-int uart2_getline(char* msg){
+int uart2_getline(volatile char* msg){
 	static int i = 0;
 
 	char c = uart2_read();
@@ -16,7 +16,7 @@ int uart2_getline(char* msg){
 	return 0;
 }
 
-int uart1_getline(char* msg){
+int uart1_getline(volatile char* msg){
 	static int i = 0;
 
 	char c = uart1_read();
