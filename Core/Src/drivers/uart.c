@@ -130,10 +130,10 @@ void uart1_read_reg(void){
 
 char uart2_read(void){
 	// Actually read the buffer on command
-	if(uart2_buff.tail >= BUFFER_SIZE) uart2_buff.tail = 0;
-
 	if(uart2_buff.tail != uart2_buff.head){
-		return uart2_buff.data[uart2_buff.tail++];
+		char msg =  uart2_buff.data[uart2_buff.tail];
+		uart2_buff.tail = (uart2_buff.tail + 1) % BUFFER_SIZE;
+		return msg;
 	}
 	return '\0';
 }
