@@ -1,4 +1,5 @@
 #include "stm32f401xe.h"
+#include "systick.h"
 
 volatile uint32_t ticks = 0;
 
@@ -25,6 +26,11 @@ void systick_init(){
 
 uint32_t millis(){
 	return ticks;
+}
+
+void delay(uint32_t ms){
+    uint32_t start = millis();
+    while(millis() - start < ms);
 }
 
 void SysTick_Handler(void){

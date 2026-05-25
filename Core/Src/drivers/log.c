@@ -3,7 +3,7 @@
 #include "gpio.h"
 
 #define PERIPH_CLK			16000000
-#define BUFFER_SIZE			20
+#define BUFFER_SIZE			50
 
 typedef struct{
 	volatile char data[BUFFER_SIZE];

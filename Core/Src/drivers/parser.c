@@ -4,10 +4,11 @@
 
 void parse_uart(char* msg){
 
-	if(strcmp("F\n", msg)) rover_forward();
-	else if(strcmp("B\r\n", msg)) rover_backward();
-	else if(strcmp("L\r\n", msg)) rover_left();
-	else if(strcmp("R\r\n", msg)) rover_right();
-	else if(strcmp("S\r\n", msg)) rover_stop();
+	// returns 0 if matches
+	if(strcmp("F\r\n", msg) == 0) rover_forward();
+	else if(strcmp("B\r\n", msg) == 0) rover_backward();
+	else if(strcmp("L\r\n", msg) == 0) rover_left();
+	else if(strcmp("R\r\n", msg) == 0) rover_right();
+	else if(strcmp("S\r\n", msg) == 0) rover_stop();
 }
 

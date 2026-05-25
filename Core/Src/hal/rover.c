@@ -24,6 +24,7 @@ void rover_stop(void){
 }
 
 void rover_set_speed(uint8_t speed){
+	// 0 - 100
 	motor_set_speed(1, speed);
 	motor_set_speed(2, speed);
 	motor_set_speed(3, speed);
