@@ -4,13 +4,13 @@
 typedef struct {
     volatile uint32_t *CCR;
     volatile uint32_t *CCMR;
-    uint8_t OCxM_Msk;
-    uint8_t OCxM_2;
-    uint8_t OCxM_1;
-    uint8_t CCxS;
-    uint8_t CCxP;
-    uint8_t OCxPE;
-    uint8_t CCxE;
+    uint32_t OCxM_Msk;
+    uint32_t OCxM_2;
+    uint32_t OCxM_1;
+    uint32_t CCxS;
+    uint32_t CCxP;
+    uint32_t OCxPE;
+    uint32_t CCxE;
 } PWM_Channel;
 
 PWM_Channel pwm_ch[4] = {
@@ -32,6 +32,7 @@ void pwm_init(int channel, uint16_t freq){
 
 	/* CONFIGURING THE TIMER */
 	RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
+	(void)RCC->APB1ENR;  // dummy read to let the clock propogate
 	// SET PRESCALER
 	TIM2->PSC = 4 - 1; 			// PRESCALER = 4
 	// SET PWM TIME FREQUENCY
