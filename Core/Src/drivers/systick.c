@@ -1,5 +1,6 @@
 #include "stm32f401xe.h"
 #include "systick.h"
+#include "log.h"
 
 volatile uint32_t ticks = 0;
 
@@ -29,6 +30,7 @@ uint32_t millis(){
 }
 
 void delay(uint32_t ms){
+	log_print("Delayed\r\n");
     uint32_t start = millis();
     while(millis() - start < ms);
 }
