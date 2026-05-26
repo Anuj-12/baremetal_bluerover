@@ -11,6 +11,7 @@ This project is primarly a learning platform for:
 - Interrupt driven design
 - Buffering communication data
 
+
 ## Current Features
 
 - GPIO abstraction
@@ -24,3 +25,6 @@ This project is primarly a learning platform for:
 - HC05 Bluetooth integration 
 
 
+## Architecture 
+
+![Rover Architecture](docs/architecture.png)
