@@ -27,4 +27,25 @@ This project is primarly a learning platform for:
 
 ## Architecture 
 
-![Rover Architecture](docs/architecture.png)
+HC05
+  |
+  v
+USART1 RX ISR  (interrupt context)
+  |
+  v
+Ring Buffer  (shared memory)
+  |
+  v
+Main Loop Poller
+  |
+  v
+Line Parser (\n framed)
+  |
+  v
+Command Decoder
+  |
+  v
+Motor Control Logic
+  |
+  v
+PWM Timers
