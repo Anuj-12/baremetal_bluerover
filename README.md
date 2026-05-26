@@ -27,6 +27,7 @@ This project is primarly a learning platform for:
 
 ## Architecture 
 
+```text
 HC05
   |
   v
@@ -49,3 +50,4 @@ Motor Control Logic
   |
   v
 PWM Timers
+```
