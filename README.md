@@ -1,9 +1,9 @@
 # Bluerover
 
-A baremetal no-HAL STM32F401RE focused on building a rover from ground up by building custom drivers.
+A baremetal no-HAL STM32F401RE project focused on building a rover from ground up by building custom drivers.
 - Modular embedded architecture
 - Interrupt driven UART communication
-- Blutooth command handling
+- Bluetooth command handling
 - PWM motor control
 
 This project is primarly a learning platform for:
@@ -63,3 +63,17 @@ This project is primarly a learning platform for:
 ```
 
 
+## Runtime Model
+
+UART reception is interrupt-driven.
+
+The ISR only:
+- receives bytes
+- stores them into the ring buffer
+
+The main superloop:
+- polls completed messages
+- parses commands
+- updates motor control state
+
+This separation keeps interrupt execution lightweight.
