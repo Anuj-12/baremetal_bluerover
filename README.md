@@ -11,18 +11,15 @@ This project is primarly a learning platform for:
 - Interrupt driven design
 - Buffering communication data
 
-## Hardware Used
+
+## 🛠 Hardware Used
 
 - STM32F401RE Nucleo Board
 - L298N Motor Driver
 - HC05 Bluetooth Module
 
---- For Debugging --- 
-- USB to TTL converter
-- 8 Channel Logic Analyzer
 
-
-## Current Features
+## ⚙️ Current Features
 
 - GPIO abstraction
 - UART drivers
@@ -35,7 +32,7 @@ This project is primarly a learning platform for:
 - HC05 Bluetooth integration 
 
 
-## Architecture 
+## 🧠 Architecture
 
 ```text
          HC05
@@ -63,7 +60,8 @@ This project is primarly a learning platform for:
 ```
 
 
-## Runtime Model
+
+## 🔄 Runtime Model
 
 UART reception is interrupt-driven.
 
@@ -77,3 +75,10 @@ The main superloop:
 - updates motor control state
 
 This separation keeps interrupt execution lightweight.
+
+
+## 🐞 Debugging Tools
+
+- USB to TTL converter
+- 8 Channel Logic Analyzer
+
