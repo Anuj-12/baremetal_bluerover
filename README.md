@@ -17,6 +17,7 @@ This project is primarly a learning platform for:
 - STM32F401RE Nucleo Board
 - L298N Motor Driver
 - HC05 Bluetooth Module
+- DC motors
 
 
 ## ⚙️ Current Features
