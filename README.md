@@ -83,3 +83,5 @@ This separation keeps interrupt execution lightweight.
 - USB to TTL converter
 - 8 Channel Logic Analyzer
 
+
+## 🎬 Preview 
