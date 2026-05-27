@@ -11,6 +11,16 @@ This project is primarly a learning platform for:
 - Interrupt driven design
 - Buffering communication data
 
+## Hardware Used
+
+- STM32F401RE Nucleo Board
+- L298N Motor Driver
+- HC05 Bluetooth Module
+
+--- For Debugging --- 
+- USB to TTL converter
+- 8 Channel Logic Analyzer
+
 
 ## Current Features
 
@@ -28,26 +38,28 @@ This project is primarly a learning platform for:
 ## Architecture 
 
 ```text
-HC05
-  |
-  v
-USART1 RX ISR  (interrupt context)
-  |
-  v
-Ring Buffer  (shared memory)
-  |
-  v
-Main Loop Poller
-  |
-  v
-Line Parser (\n framed)
-  |
-  v
-Command Decoder
-  |
-  v
+     HC05
+      |
+      v
+ USART1 RX ISR
+      |
+      v
+  Ring Buffer
+      |
+      v
+Superloop Polling
+      |
+      v
+  Line Parser
+      |
+      v
+ Command Decoder
+      |
+      v
 Motor Control Logic
-  |
-  v
-PWM Timers
+      |
+      v
+   PWM Timers
 ```
+
+
