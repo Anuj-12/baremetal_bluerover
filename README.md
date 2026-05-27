@@ -38,28 +38,28 @@ This project is primarly a learning platform for:
 ## Architecture 
 
 ```text
-     HC05
-      |
-      v
- USART1 RX ISR
-      |
-      v
-  Ring Buffer
-      |
-      v
-Superloop Polling
-      |
-      v
-  Line Parser
-      |
-      v
- Command Decoder
-      |
-      v
-Motor Control Logic
-      |
-      v
-   PWM Timers
+         HC05
+          |
+          v
+     USART1 RX ISR
+          |
+          v
+      Ring Buffer
+          |
+          v
+   Superloop Polling
+          |
+          v
+     Line Parser
+          |
+          v
+   Command Decoder
+          |
+          v
+  Motor Control Logic
+          |
+          v
+      PWM Timers
 ```
 
 
